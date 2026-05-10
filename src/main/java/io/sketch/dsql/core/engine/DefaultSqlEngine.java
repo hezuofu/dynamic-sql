@@ -85,7 +85,7 @@ public class DefaultSqlEngine implements SqlEngine {
             }
         }
 
-        SqlScriptParser parser = parserFactory.getParser(format);
+        SqlScriptParser parser = parserFactory.getParser(format, config.getExpressionEvaluator());
         SqlNode node = parser.parse(script);
 
         if (config.isCacheEnabled()) {

@@ -82,4 +82,25 @@ public class ContextStack {
     public void clear() {
         stack.clear();
     }
+
+    ContextStack snapshot() {
+        ContextStack copy = new ContextStack();
+        for (Map<String, ContextVariable> frame : stack) {
+            Map<String, ContextVariable> frameCopy = new LinkedHashMap<>();
+            for (Map.Entry<String, ContextVariable> entry : frame.entrySet()) {
+                ContextVariable var = entry.getValue();
+                frameCopy.put(entry.getKey(), ContextVariable.builder()
+                        .name(var.getName())
+                        .value(var.getValue())
+                        .modifiable(var.isModifiable())
+                        .build());
+            }
+            copy.stack.push(frameCopy);
+        }
+        return copy;
+    }
+
+    Iterable<Map<String, ContextVariable>> getFrames() {
+        return () -> stack.descendingIterator();
+    }
 }

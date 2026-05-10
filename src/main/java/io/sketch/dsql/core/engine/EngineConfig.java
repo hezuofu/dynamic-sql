@@ -7,15 +7,22 @@ import java.util.Objects;
 
 public class EngineConfig {
 
-    private ExpressionEvaluator expressionEvaluator;
-    private String defaultParserFormat = "xml";
-    private boolean cacheEnabled = true;
-    private int cacheSize = 1000;
-    private boolean validationEnabled = true;
-    private boolean pluginEnabled = true;
+    private final ExpressionEvaluator expressionEvaluator;
+    private final String defaultParserFormat;
+    private final boolean cacheEnabled;
+    private final int cacheSize;
+    private final boolean validationEnabled;
+    private final boolean pluginEnabled;
 
-    private EngineConfig() {
-        this.expressionEvaluator = new MvelEvaluator();
+    private EngineConfig(Builder builder) {
+        this.expressionEvaluator = builder.expressionEvaluator != null
+                ? builder.expressionEvaluator : new MvelEvaluator();
+        this.defaultParserFormat = builder.defaultParserFormat != null
+                ? builder.defaultParserFormat : "xml";
+        this.cacheEnabled = builder.cacheEnabled;
+        this.cacheSize = builder.cacheSize;
+        this.validationEnabled = builder.validationEnabled;
+        this.pluginEnabled = builder.pluginEnabled;
     }
 
     public static Builder builder() {
@@ -65,40 +72,45 @@ public class EngineConfig {
     }
 
     public static class Builder {
-        private final EngineConfig config = new EngineConfig();
+        private ExpressionEvaluator expressionEvaluator;
+        private String defaultParserFormat;
+        private boolean cacheEnabled = true;
+        private int cacheSize = 1000;
+        private boolean validationEnabled = true;
+        private boolean pluginEnabled = true;
 
         public Builder expressionEvaluator(ExpressionEvaluator evaluator) {
-            config.expressionEvaluator = evaluator;
+            this.expressionEvaluator = evaluator;
             return this;
         }
 
         public Builder defaultParserFormat(String format) {
-            config.defaultParserFormat = format;
+            this.defaultParserFormat = format;
             return this;
         }
 
         public Builder cacheEnabled(boolean enabled) {
-            config.cacheEnabled = enabled;
+            this.cacheEnabled = enabled;
             return this;
         }
 
         public Builder cacheSize(int size) {
-            config.cacheSize = size;
+            this.cacheSize = size;
             return this;
         }
 
         public Builder validationEnabled(boolean enabled) {
-            config.validationEnabled = enabled;
+            this.validationEnabled = enabled;
             return this;
         }
 
         public Builder pluginEnabled(boolean enabled) {
-            config.pluginEnabled = enabled;
+            this.pluginEnabled = enabled;
             return this;
         }
 
         public EngineConfig build() {
-            return config;
+            return new EngineConfig(this);
         }
     }
 }

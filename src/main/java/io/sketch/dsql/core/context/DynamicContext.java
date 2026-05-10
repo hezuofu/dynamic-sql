@@ -100,6 +100,11 @@ public class DynamicContext {
         copy.sqlBuilder.append(this.sqlBuilder);
         copy.parameters.addAll(this.parameters);
         copy.parameterIndex.set(this.parameterIndex.get());
+        copy.contextStack.clear();
+        for (Map<String, ContextVariable> frame : this.contextStack.getFrames()) {
+            copy.contextStack.push();
+            frame.forEach((k, v) -> copy.contextStack.setVariable(k, v.getValue(), v.isModifiable()));
+        }
         return copy;
     }
 

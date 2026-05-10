@@ -9,7 +9,11 @@ public interface ExpressionEvaluator {
 
     default boolean evaluateBoolean(String expression, Map<String, Object> variables) {
         Object result = evaluate(expression, variables);
-        return Boolean.TRUE.equals(result);
+        if (result == null) return false;
+        if (result instanceof Boolean) return (Boolean) result;
+        if (result instanceof Number) return ((Number) result).doubleValue() != 0;
+        if (result instanceof CharSequence) return !((CharSequence) result).isEmpty();
+        return true;
     }
 
     default String evaluateString(String expression, Map<String, Object> variables) {

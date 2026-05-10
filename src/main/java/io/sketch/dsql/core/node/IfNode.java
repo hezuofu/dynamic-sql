@@ -26,7 +26,11 @@ public class IfNode implements SqlNode {
 
     private boolean evaluateTest(DynamicContext context) {
         Object result = evaluator.evaluate(test, context.getAllVariables());
-        return Boolean.TRUE.equals(result);
+        if (result == null) return false;
+        if (result instanceof Boolean) return (Boolean) result;
+        if (result instanceof Number) return ((Number) result).doubleValue() != 0;
+        if (result instanceof CharSequence) return !((CharSequence) result).isEmpty();
+        return true;
     }
 
     public String getTest() {

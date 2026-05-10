@@ -20,11 +20,25 @@ public class XmlSqlScriptParser implements SqlScriptParser {
         this.evaluator = evaluator;
     }
 
+    private static final ThreadLocal<DocumentBuilder> DOC_BUILDER = ThreadLocal.withInitial(() -> {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
+            factory.setXIncludeAware(false);
+            factory.setExpandEntityReferences(false);
+            return factory.newDocumentBuilder();
+        } catch (Exception e) {
+            throw new SqlParseException("Failed to create DocumentBuilder", e);
+        }
+    });
+
     @Override
     public SqlNode parse(String script) {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            DocumentBuilder builder = DOC_BUILDER.get();
             Document doc = builder.parse(new InputSource(new StringReader(script)));
             doc.getDocumentElement().normalize();
             
