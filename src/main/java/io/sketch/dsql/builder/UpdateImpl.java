@@ -21,15 +21,11 @@ final class UpdateImpl<T> implements Update<T> {
     public Update<T> set(Field<T,?> col, Object val) { sets.put(col.name(), val); return this; }
 
     @SuppressWarnings("unchecked")
-    public FilteredUpdate<T> where(Consumer<T> cb) {
+    public Statement where(Consumer<T> cb) {
         PredicateCollector c = new PredicateCollector();
         T t = (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[]{type},
                 (p, m, a) -> { Field<?,?> f = EntityResolver.field(type, m); return f != null ? new FieldTracker<>(f, c) : null; });
-        cb.accept(t); where = c.build(); return buildResult();
-    }
-
-    private FilteredUpdate<T> buildResult() {
-        return () -> buildImpl();
+        cb.accept(t); where = c.build(); return this::buildImpl;
     }
 
     public SqlResult build() { return buildImpl(); }
