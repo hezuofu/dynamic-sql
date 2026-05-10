@@ -12,7 +12,7 @@ final class InsertImpl<T> implements Insert<T> {
     private final String table;
     private final List<Field<T,?>> cols = new ArrayList<>();
     private final List<List<Object>> rows = new ArrayList<>();
-    private Query<?> subquery;
+    private Select<?> subquery;
 
     InsertImpl(Class<T> type) { this.table = EntityResolver.tableName(type); }
 
@@ -21,7 +21,7 @@ final class InsertImpl<T> implements Insert<T> {
 
     public Insert<T> values(Object... vs) { rows.add(Arrays.asList(vs)); return this; }
     public Insert<T> row(Object... vs) { return values(vs); }
-    public Insert<T> select(Query<?> sq) { this.subquery = sq; return this; }
+    public Insert<T> select(Select<?> sq) { this.subquery = sq; return this; }
 
     public SqlResult build() {
         StringBuilder sql = new StringBuilder(); List<Object> params = new ArrayList<>();
